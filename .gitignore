@@ -1,6 +1,7 @@
 .env
+environments/*.env
+!environments/*.env.example
 *.pem
 *.key
 backups/
 .DS_Store
-

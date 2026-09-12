@@ -1,0 +1,17 @@
+name: Deploy staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    environment: staging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate release inputs
+        run: bash scripts/validate.sh
+      - name: Render deployment plan
+        run: bash scripts/deploy.sh staging
