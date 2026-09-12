@@ -93,6 +93,24 @@
 - 验证：`bash scripts/validate.sh` 和 `git diff --check` 通过；功能分支已推送 GitHub。
 - 后续：创建 PR 合并到 `develop`，再根据 Directus schema 定义真实 n8n workflow JSON。
 
+## 记录 006：素材基础元数据服务契约
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`asset-metadata-service` 仓库
+- 分支 / 提交：`feature/metadata-contract` / `c429be7`
+- 目标：建立图片和视频固有信息的确定性提取契约，避免将尺寸、比例、时长等信息混入 AI Tag 或人工审核。
+- 操作：
+  - 增加图片/视频元数据 JSON Schema。
+  - 增加宽高、约分比例、视频时长、帧率和确定性来源标记。
+  - 扩展 Python 结果对象和构造函数，拒绝图片携带视频字段。
+  - 增加元数据契约文档和单元测试。
+  - 更新 CI 校验 JSON Schema。
+- 安全边界：未连接 Directus、未读取服务器素材、未修改 AWS；服务只处理确定性元数据，不生成 AI 标签。
+- 验证：Python 编译、内置 smoke validation、JSON 校验和 `git diff --check` 通过；本机缺少 pytest，因此完整 pytest 将由 CI 执行。
+- Git：功能分支已推送至 GitHub。
+- 后续：创建 PR 合并到 `develop`；之后设计 Directus 元数据字段映射和 ffprobe/ImageMagick 适配器。
+
 ## 记录模板
 
 ```text
