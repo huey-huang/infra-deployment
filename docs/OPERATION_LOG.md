@@ -197,6 +197,23 @@
 - Git：功能分支已推送 GitHub。
 - 后续：导入前完成批量触发、错误分类和 staging 凭证审查。
 
+## 记录 012：批量打标请求与 staging 导入预检
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`n8n-ai-tagging` 仓库
+- 分支 / 提交：`feature/workflow-foundation` / `231835d`
+- 目标：支持单个或小批量素材触发，并在导入 staging n8n 前阻止不安全配置。
+- 操作：
+  - 增加 tagging request Schema，允许一个 `asset_id` 或 1-100 个唯一 `asset_ids`。
+  - 工作流增加批量展开节点，每个素材仍独立进入读取、AI、校验和提案写回链路。
+  - 增加 staging import preflight，检查工作流禁用状态、契约版本、凭证模板和潜在密钥。
+  - 增加 staging 导入人工检查清单，要求先测单图、单视频、错误素材和小批量。
+- 安全边界：工作流仍为 `active: false`；预检不连接 n8n、Directus 或 AI Gateway。
+- 验证：Tagging、Workflow、Fallback、Batch Request、Staging Preflight 五项检查通过。
+- Git：功能分支已提交；推送结果需以远端状态复核。
+- 后续：先导入 staging n8n 但保持禁用，完成凭证绑定和最小样本测试后再评估启用。
+
 ## 记录模板
 
 ```text
