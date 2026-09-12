@@ -11,7 +11,7 @@ CONFIG_FILE="${CONFIG_FILE:-$ROOT_DIR/environments/${ENVIRONMENT}.env.example}"
 . "$CONFIG_FILE"
 
 "$ROOT_DIR/scripts/validate.sh"
-echo "Deployment plan: environment=$ENVIRONMENT path=$DEPLOY_PATH project=$COMPOSE_PROJECT_NAME"
+echo "Deployment plan: environment=$ENVIRONMENT directus=$DIRECTUS_DEPLOY_PATH n8n=$N8N_DEPLOY_PATH metadata=$METADATA_DEPLOY_PATH project=$COMPOSE_PROJECT_NAME"
 echo "Versions: Directus=$DIRECTUS_PLATFORM_VERSION n8n=$N8N_AI_TAGGING_VERSION metadata=$ASSET_METADATA_VERSION"
 
 if [[ "$DRY_RUN" == "true" ]]; then
