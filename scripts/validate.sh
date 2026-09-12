@@ -11,7 +11,7 @@ manifest="manifests/versions.yaml"
 required_keys=(directus_platform n8n_ai_tagging asset_metadata_service)
 for key in "${required_keys[@]}"; do
   value="$(awk -F': *' -v k="$key" '$1 == k { print $2 }' "$manifest")"
-  [[ "$value" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+  [[ "$value" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] || {
     echo "Invalid or missing $key in $manifest" >&2
     exit 1
   }
