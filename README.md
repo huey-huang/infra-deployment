@@ -8,6 +8,7 @@
 - `manifests/`：Directus、n8n 和元数据服务的版本矩阵。
 - `environments/`：staging / production 配置模板；真实配置只能通过 Secret Store 或 GitHub Environment 注入。
 - `scripts/`：校验、部署计划和健康检查。
+- `docs/OPERATION_LOG.md`：按追加方式记录关键操作、验证和后续动作。
 - `.github/workflows/`：PR 校验、staging 流程和 production 手动流程。
 
 ## 分支和发布
