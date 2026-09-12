@@ -214,6 +214,21 @@
 - Git：功能分支已提交；推送结果需以远端状态复核。
 - 后续：先导入 staging n8n 但保持禁用，完成凭证绑定和最小样本测试后再评估启用。
 
+## 记录 013：创建四仓库 PR
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：四个 GitHub 仓库的功能分支
+- 目标：将已验证的功能变更提交给 `develop` 分支评审，避免绕过分支规范直接部署。
+- 操作：创建以下 Pull Request：
+  - `directus-platform`：[PR #1](https://github.com/huey-huang/directus-platform/pull/1)
+  - `n8n-ai-tagging`：[PR #1](https://github.com/huey-huang/n8n-ai-tagging/pull/1)
+  - `asset-metadata-service`：[PR #1](https://github.com/huey-huang/asset-metadata-service/pull/1)
+  - `infra-deployment`：[PR #1](https://github.com/huey-huang/infra-deployment/pull/1)
+- 安全边界：只创建 PR，没有自动合并、没有部署 staging、没有修改 AWS 或 Directus 数据。
+- 验证：只读检查显示四个 `develop` 仍是初始基线；PR 已创建供人工审阅。
+- 后续：由用户审阅并合并 PR 到各自 `develop`；合并完成后再进行 staging 部署准备。
+
 ## 记录模板
 
 ```text
