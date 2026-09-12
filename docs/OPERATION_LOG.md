@@ -250,20 +250,22 @@
 - Git：版本矩阵功能分支：`feature/staging-release-candidate-pinning`，提交 `874a9d0`，已推送 GitHub。
 - 后续：审阅并合并版本矩阵 PR；再进行测试服务器连接预检和 staging 导入准备。
 
-## 记录 015：合并 staging 版本矩阵
+## 记录 016：测试服务器只读预检
 
 - 时间：2026-09-12
 - 操作者：Codex / 用户明确授权
-- 范围：`infra-deployment` 仓库
-- PR：[#2](https://github.com/huey-huang/infra-deployment/pull/2)
-- 合并提交：`7269e48`
-- 操作：
-  - 检查 staging 版本矩阵 PR 的 CI，全部通过。
-  - 以 squash 方式合并到 `develop`。
-  - staging 现在固定引用 `v0.1.1-rc.1` 的三个服务版本。
-- 安全边界：没有连接 AWS、没有执行远程部署、没有创建生产 Tag。
-- 验证：PR 状态为 MERGED；staging dry-run 已通过。
-- 后续：生成 staging 部署计划并执行服务器只读连接预检；在用户确认前不启用真实远程部署。
+- 范围：AWS staging 测试服务器 `3.214.234.223`
+- 目标：确认服务器具备新 staging 部署的基础条件，但不执行任何远程变更。
+- 检查结果：
+  - Ubuntu 24.04.4 LTS，SSH 登录成功。
+  - Docker 29.8.0，Docker Compose v5.5.1。
+  - Docker systemd 服务 active，`ubuntu` 用户属于 docker 组。
+  - 根分区约 89G 可用，内存约 7.6GiB，总体资源充足。
+  - `/opt/services/directus-test` 存在，保留旧 `.env`、配置、备份和扩展目录。
+  - 当前没有运行中的容器。
+- 安全边界：只执行远程只读命令；未读取 Secret 内容，未启动、停止、删除或修改容器、Volume、文件和 DNS。
+- 验证：SSH、Docker、资源和部署目录检查均通过。
+- 后续：先准备新部署目录和 Secret 注入方案；真正执行前还需用户确认远程写入范围。
 
 ## 记录模板
 
