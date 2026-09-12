@@ -5,8 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          test -s manifests/versions.yaml
-          bash -n bootstrap/bootstrap-ubuntu.sh
-          bash -n scripts/healthcheck.sh
-
+      - run: bash scripts/validate.sh
