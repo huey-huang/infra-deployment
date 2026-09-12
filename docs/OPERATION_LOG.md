@@ -370,3 +370,15 @@
 - 影响评估：当前工作流只读取 Directus、调用 AI Gateway 并写回 Directus，未调用 metadata，因此不阻塞凭证绑定和手动打标测试。
 - 安全边界：未修改 Docker 网络、服务配置、凭证或业务数据。
 - 后续：在 metadata 接入工作流前，通过 infra-deployment 变更将两个服务接入受控共享网络，并补充连通性测试。
+
+## 记录 026：确认 Directus 域名绑定
+
+- 时间：2026-09-12 15:50 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：AWS staging Directus、Cloudflare DNS 只读核验
+- 目标：确认截图中的 `directus.velotric.co` A 记录是否已绑定当前 staging Directus。
+- 操作：查询 `directus.velotric.co` A 记录；请求 HTTPS 健康端点；读取并校验服务器 Caddy 配置。
+- 验证：A 记录解析到 `3.214.234.223`；`https://directus.velotric.co/server/ping` 返回 HTTP 200 和 `pong`；Caddy 将域名反向代理到 `127.0.0.1:8055`，配置校验通过。
+- 安全边界：本次未修改 Cloudflare DNS、Caddy、服务器或 Directus 配置。
+- 结论：当前域名已经绑定并可访问新 staging Directus，无需重复创建该 DNS 记录。
+- 后续：如需域名访问 n8n 或 metadata，应分别规划子域名和反代配置；当前 n8n/metadata 仍只监听本机端口。
