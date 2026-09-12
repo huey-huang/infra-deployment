@@ -131,6 +131,22 @@
 - Git：三个功能分支均已推送 GitHub，可分别创建 PR。
 - 后续：审阅并合并三个 PR 后，再设计 Directus 数据模型快照和真实 n8n workflow。
 
+## 记录 008：Directus Schema manifest
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`directus-platform` 仓库
+- 分支 / 提交：`feature/schema-manifest` / `9b87f02`
+- 目标：将 Directus 数据模型从说明文档推进为可审查、可校验的版本化 manifest。
+- 操作：
+  - 增加 `schema/manifest.v0.1.json`，定义元数据、标签定义、AI 提案、审核任务和审核版本集合。
+  - 明确基础元数据字段只读、审核版本追加写入和标签库输入类型。
+  - 增加 Schema 发布说明，规定先审查 manifest，再从干净 staging 导出 Directus snapshot。
+  - 增加 manifest 校验脚本并接入 Directus CI。
+- 安全边界：manifest 不包含真实密钥、用户数据或素材记录；未向远程 Directus 执行迁移。
+- 验证：`bash scripts/validate-schema.sh` 和 `git diff --check` 通过；功能分支已推送 GitHub。
+- 后续：创建 PR 合并到 `develop`；PR 审核通过后再在 staging 生成真正的 Directus snapshot。
+
 ## 记录模板
 
 ```text
