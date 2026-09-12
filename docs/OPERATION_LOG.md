@@ -320,6 +320,18 @@
 - 验证：n8n CLI 报告 `Successfully imported 1 workflow`，工作流列表可见。
 - 后续：在 n8n UI 中绑定 staging Credential，先手动测试且保持禁用，再考虑启用。
 
+## 记录 021：staging 管理后台与登录验证
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户明确授权
+- 范围：AWS staging Directus 和 n8n
+- 检查结果：
+  - n8n `http://127.0.0.1:5678/` 返回管理页面，`/healthz` 返回 `{"status":"ok"}`。
+  - Directus staging 管理员登录 API 验证成功；Token 仅在服务器内存中使用，未输出。
+- 安全边界：未在浏览器输入或保存任何 AI API Key、Directus Token、密码或 n8n Credential；未启用工作流。
+- 验证：后台入口和登录状态可用。
+- 后续：用户通过 SSH 隧道进入 n8n UI，手动创建 Directus 和 AI Gateway Credential；完成后再进行单素材测试。
+
 ## 记录模板
 
 ```text
