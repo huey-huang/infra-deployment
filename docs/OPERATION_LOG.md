@@ -57,6 +57,24 @@
 - 验证：日志文件已纳入仓库，脚本校验和 staging dry-run 通过。
 - 后续：所有重要操作从记录 004 开始连续追加。
 
+## 记录 004：Directus 平台 staging 基础配置
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`directus-platform` 仓库
+- 分支 / 提交：`feature/staging-foundation` / `59fc0bc`
+- 目标：为 Directus 建立 local、staging、production 可区分的 Compose 基础配置。
+- 操作：
+  - 增加 staging / production 环境模板和独立 Compose project name。
+  - 使用独立 PostgreSQL、上传文件 Volume，降低环境误连风险。
+  - 增加 Directus 容器健康检查、日志级别、缓存和时区配置。
+  - 增加 Compose 校验脚本及 CI 调用。
+  - 修正一次脚本落入外层旧仓库的路径问题，外层未保留该脚本。
+- 安全边界：只提交 `.env.example` 模板；密码、Secret、Token 和生产域名凭证仍由部署环境注入。
+- 验证：Shell 语法检查和 `git diff --check` 通过；本机未安装 Docker，因此 Compose 实际解析暂未执行，CI 将在 GitHub Actions 中执行。
+- Git：功能分支已推送至 GitHub。
+- 后续：创建 PR 合并到 `develop`；在基础设施仓库接入版本矩阵前，不连接 AWS 服务器。
+
 ## 记录模板
 
 ```text
