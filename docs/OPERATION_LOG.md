@@ -180,6 +180,23 @@
 - Git：功能分支已推送 GitHub。
 - 后续：实现带错误输出的 Terra/Luna 分支，再进行 staging 导入前的人工审查。
 
+## 记录 011：Sol / Terra / Luna 回退分支
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`n8n-ai-tagging` 仓库
+- 分支 / 提交：`feature/workflow-foundation` / `85711fd`
+- 目标：在工作流骨架中实现逐级模型回退，避免单一模型故障导致整个打标任务无反馈。
+- 操作：
+  - 为 Sol、Terra、Luna 增加独立调用和结果规范化节点。
+  - 各模型调用启用错误输出，成功则进入统一 Tag Result 合同校验，失败才进入下一个模型。
+  - 全部模型失败时保留失败轨迹，不写入 AI 提案。
+  - 更新校验脚本，确认三个模型节点和合同校验节点存在。
+- 安全边界：工作流仍为 `active: false`；未连接真实 AI Gateway、n8n 或 Directus。
+- 验证：Tagging contract、Workflow skeleton、Model fallback policy 三项校验和 `git diff --check` 通过。
+- Git：功能分支已推送 GitHub。
+- 后续：导入前完成批量触发、错误分类和 staging 凭证审查。
+
 ## 记录模板
 
 ```text
