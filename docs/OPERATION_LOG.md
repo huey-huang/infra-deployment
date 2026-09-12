@@ -267,6 +267,21 @@
 - 验证：SSH、Docker、资源和部署目录检查均通过。
 - 后续：先准备新部署目录和 Secret 注入方案；真正执行前还需用户确认远程写入范围。
 
+## 记录 017：Directus staging 首次部署
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户明确授权
+- 范围：AWS 测试服务器 `/opt/services/directus-staging-v011`
+- 版本：`directus-platform v0.1.1-rc.1`
+- 操作：
+  - 发现服务器无法匿名 clone 私有 GitHub 仓库，改用本地已验证 Tag 归档通过 SSH 传输，不写入 Git 凭证。
+  - 创建全新 staging 目录，复用旧目录 `.env` 的受限副本，并补充固定的 `POSTGRES_VERSION` 与 `DIRECTUS_VERSION` 非敏感版本变量。
+  - 拉取 `directus/directus:12.3.1` 和 `postgres:16.10-alpine`。
+  - 启动 Directus 和 PostgreSQL，创建独立 staging Volume 和网络。
+- 验证：PostgreSQL healthy；Directus healthy；本机访问 `https://directus.velotric.co/server/ping` 返回 `pong`。
+- 安全边界：未修改旧 `/opt/services/directus-test`、旧 Volume 或 Caddy；未部署 n8n/元数据服务；未导入 Schema snapshot；未输出 Secret 值。
+- 后续：为 n8n 和 metadata service 增加可运行容器定义后，再部署到独立 staging 服务；Directus Schema snapshot 需单独审查后导入。
+
 ## 记录模板
 
 ```text
