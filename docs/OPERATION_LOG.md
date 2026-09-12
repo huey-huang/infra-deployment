@@ -111,6 +111,26 @@
 - Git：功能分支已推送至 GitHub。
 - 后续：创建 PR 合并到 `develop`；之后设计 Directus 元数据字段映射和 ffprobe/ImageMagick 适配器。
 
+## 记录 007：跨仓库接口契约对齐
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`directus-platform`、`n8n-ai-tagging`、`asset-metadata-service`
+- 分支 / 提交：
+  - Directus：`feature/staging-foundation` / `77d83ab`
+  - n8n：`feature/workflow-foundation` / `cdeaa97`
+  - Metadata：`feature/metadata-contract` / `1c425ad`
+- 目标：统一 Directus 数据模型、元数据输出和 AI Tag 结果，避免后续工作流与审核界面各自定义字段。
+- 操作：
+  - 在 Directus 仓库增加 `DIRECTUS_DATA_MODEL.md`，定义元数据、标签定义、AI 提案、审核任务和版本快照集合。
+  - n8n Tag Result 增加 `tag_definition_version` 和 `generated_at`。
+  - 元数据结果增加 `asset_id`、`extractor_version` 和 `extracted_at`。
+  - 明确元数据不可人工编辑、AI 提案不可覆盖、审核版本追加写入的约束。
+- 安全边界：只修改契约文档、Schema 和本地测试；未连接 Directus、n8n 或 AWS，未触碰现有素材和数据库。
+- 验证：JSON 校验、Python 编译、metadata smoke validation、n8n 校验脚本和 `git diff --check` 通过。
+- Git：三个功能分支均已推送 GitHub，可分别创建 PR。
+- 后续：审阅并合并三个 PR 后，再设计 Directus 数据模型快照和真实 n8n workflow。
+
 ## 记录模板
 
 ```text
