@@ -358,3 +358,15 @@
 - 安全边界：仅访问 staging；未启用 n8n 工作流；未导入 AI/API 凭证；未修改生产环境、旧 `/opt/services/directus-test`、DNS 或 Cloudflare 配置。
 - 验证：Directus 容器 healthy，`https://directus.velotric.co/server/ping` 返回 `pong`；n8n 容器 healthy，`127.0.0.1:5678/healthz` 返回 `{"status":"ok"}`；metadata 容器 healthy，`127.0.0.1:8080/healthz` 返回 `{"status":"ok"}`。
 - 后续：在 n8n UI 创建 staging-only Directus 与 AI Gateway Credential，绑定到工作流但保持禁用，先执行单图片、单视频和错误 asset ID 的手动测试。
+
+## 记录 025：n8n 出站链路预检
+
+- 时间：2026-09-12 15:20 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：AWS staging Docker 网络
+- 目标：在绑定凭证前确认 n8n 对 Directus 及后续 metadata 服务的连通性。
+- 操作：从 n8n 容器内只读请求 Directus `/server/ping`，并检查 n8n 与 metadata 容器所属 Docker 网络。
+- 验证：Directus 返回 `pong`；n8n 与 metadata 当前分别位于 `n8n-ai-tagging_*` 和 `asset-metadata-service_default` 网络，容器 DNS 不能直接解析对方。
+- 影响评估：当前工作流只读取 Directus、调用 AI Gateway 并写回 Directus，未调用 metadata，因此不阻塞凭证绑定和手动打标测试。
+- 安全边界：未修改 Docker 网络、服务配置、凭证或业务数据。
+- 后续：在 metadata 接入工作流前，通过 infra-deployment 变更将两个服务接入受控共享网络，并补充连通性测试。
