@@ -282,6 +282,22 @@
 - 安全边界：未修改旧 `/opt/services/directus-test`、旧 Volume 或 Caddy；未部署 n8n/元数据服务；未导入 Schema snapshot；未输出 Secret 值。
 - 后续：为 n8n 和 metadata service 增加可运行容器定义后，再部署到独立 staging 服务；Directus Schema snapshot 需单独审查后导入。
 
+## 记录 018：n8n 与 metadata staging 运行时部署
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户明确授权
+- 范围：AWS 测试服务器
+- 版本：n8n `v0.1.2-rc.1`，metadata `v0.1.2-rc.1`
+- 操作：
+  - 将本地已验证 Tag 归档通过 SSH 传输，避免服务器保存 GitHub 凭证。
+  - 部署 n8n 运行时到 `/opt/services/n8n-staging-v012`，包含独立 PostgreSQL 和 n8n Volume。
+  - 部署 metadata HTTP 服务到 `/opt/services/metadata-staging-v012`，构建 Python 镜像并启动容器。
+  - n8n 工作流文件以只读方式挂载，但没有自动导入或启用。
+  - 修正 infra staging 模板，记录 Directus、n8n、metadata 三个独立部署路径。
+- 验证：n8n healthy；metadata healthy；`/healthz` 返回成功；metadata 图片示例返回 `16:9` 和确定性来源信息；Directus 仍 healthy。
+- 安全边界：未导入 n8n workflow、未配置真实 AI Credential、未调用 AI、未修改 Caddy/DNS/旧部署目录。
+- 后续：为 n8n 绑定 staging Credential 并导入工作流（保持禁用），再设计 metadata 到 Directus 的受限写回任务。
+
 ## 记录模板
 
 ```text
