@@ -346,3 +346,15 @@
 - 验证：
 - 后续：
 ```
+
+## 记录 024：staging 三服务健康检查与日志 PR 合并
+
+- 时间：2026-09-12  Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：`infra-deployment` 操作日志、AWS staging 测试服务器
+- 分支 / 提交：日志分支 `feature/operation-log-022` rebase 后提交 `f128e3c`；PR #11 已通过 CI 并 squash 合并到 `develop`
+- 目标：确认运行时部署结果，并在继续配置凭证前建立可追溯记录。
+- 操作：解决 `docs/OPERATION_LOG.md` 与最新 `develop` 基线的冲突；推送并合并 PR #11；通过 SSH 对 Directus、n8n、metadata 容器及 HTTP 健康端点执行只读检查。
+- 安全边界：仅访问 staging；未启用 n8n 工作流；未导入 AI/API 凭证；未修改生产环境、旧 `/opt/services/directus-test`、DNS 或 Cloudflare 配置。
+- 验证：Directus 容器 healthy，`https://directus.velotric.co/server/ping` 返回 `pong`；n8n 容器 healthy，`127.0.0.1:5678/healthz` 返回 `{"status":"ok"}`；metadata 容器 healthy，`127.0.0.1:8080/healthz` 返回 `{"status":"ok"}`。
+- 后续：在 n8n UI 创建 staging-only Directus 与 AI Gateway Credential，绑定到工作流但保持禁用，先执行单图片、单视频和错误 asset ID 的手动测试。
