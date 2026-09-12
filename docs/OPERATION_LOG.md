@@ -75,6 +75,24 @@
 - Git：功能分支已推送至 GitHub。
 - 后续：创建 PR 合并到 `develop`；在基础设施仓库接入版本矩阵前，不连接 AWS 服务器。
 
+## 记录 005：n8n AI 打标工作流基础配置
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`n8n-ai-tagging` 仓库
+- 分支 / 提交：`feature/workflow-foundation` / `1315dc2`
+- 目标：建立可版本化、可校验的 n8n AI 打标契约，为后续导入真实工作流做准备。
+- 操作：
+  - 增加 AI Gateway 环境变量模板和配置说明。
+  - 固化 `Sol → Terra → Luna` 模型回退顺序。
+  - 扩展 Tag Result JSON Schema，包含素材、媒体类型、标签结果和模型调用轨迹。
+  - 明确 `unknown` 与 `not_applicable` 为可审计结果。
+  - 增加示例结果、工作流契约文档和 JSON 校验脚本。
+  - 更新 CI，使其执行统一校验脚本。
+- 安全边界：没有写入真实 AI API Key、Directus Token 或 n8n Credential；工作流凭证仍由 n8n 管理。
+- 验证：`bash scripts/validate.sh` 和 `git diff --check` 通过；功能分支已推送 GitHub。
+- 后续：创建 PR 合并到 `develop`，再根据 Directus schema 定义真实 n8n workflow JSON。
+
 ## 记录模板
 
 ```text
