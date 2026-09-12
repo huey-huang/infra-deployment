@@ -163,6 +163,23 @@
 - 验证：`bash scripts/validate.sh` 通过，工作流 JSON 和契约检查通过；功能分支已推送 GitHub。
 - 后续：评审并补充 Terra/Luna 回退分支、Schema 校验节点和批量触发，再考虑导入 staging n8n。
 
+## 记录 010：n8n 结果校验与模型回退策略
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`n8n-ai-tagging` 仓库
+- 分支 / 提交：`feature/workflow-foundation` / `4558804`
+- 目标：避免不完整或不符合契约的 AI 结果写入 Directus，并固化模型回退边界。
+- 操作：
+  - 在禁用工作流中增加 Asset/Tag Definitions 合并节点。
+  - 增加 Tag Result 合同校验、有效性分支和拒绝无效结果节点。
+  - 增加 `model-fallback.json`，固定 Sol → Terra → Luna 顺序和可回退错误类型。
+  - 明确凭证错误、素材不存在和不支持媒体类型不触发模型回退。
+- 安全边界：工作流仍为 `active: false`；未调用任何真实模型、Directus 或 n8n 实例。
+- 验证：Tagging contract、Workflow skeleton、Model fallback policy 三项校验均通过。
+- Git：功能分支已推送 GitHub。
+- 后续：实现带错误输出的 Terra/Luna 分支，再进行 staging 导入前的人工审查。
+
 ## 记录模板
 
 ```text
