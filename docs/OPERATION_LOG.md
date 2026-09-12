@@ -229,6 +229,27 @@
 - 验证：只读检查显示四个 `develop` 仍是初始基线；PR 已创建供人工审阅。
 - 后续：由用户审阅并合并 PR 到各自 `develop`；合并完成后再进行 staging 部署准备。
 
+## 记录 014：PR 审阅合并与 staging 预发布版本矩阵
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户明确授权
+- 范围：四个 GitHub 仓库、`infra-deployment` staging 版本矩阵
+- 操作：
+  - 检查四个 PR 的目标分支、文件清单、CI 和 merge 状态。
+  - 确认 CI 全部成功、状态为 CLEAN 后，以 squash 方式合并到各自 `develop`。
+  - 删除已合并的远程功能分支，并同步四个本地 `develop`。
+  - 为三个服务的 develop 合并提交创建统一 staging 预发布 Tag：`v0.1.1-rc.1`。
+  - 将 staging 版本矩阵更新为三个预发布 Tag。
+- 合并结果：
+  - Directus：`ea404f5`
+  - n8n：`f2a80a8`
+  - Metadata：`7bb0020`
+  - Infra：`fb58ab8`
+- 安全边界：未自动合并到 `main`，未创建生产 Tag，未连接或修改 AWS/Directus/n8n。
+- 验证：四个 PR 均为 MERGED；staging `validate.sh` 和 `deploy.sh staging` dry-run 通过。
+- Git：版本矩阵功能分支：`feature/staging-release-candidate-pinning`，提交 `874a9d0`，已推送 GitHub。
+- 后续：审阅并合并版本矩阵 PR；再进行测试服务器连接预检和 staging 导入准备。
+
 ## 记录模板
 
 ```text
