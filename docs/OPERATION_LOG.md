@@ -298,6 +298,28 @@
 - 安全边界：未导入 n8n workflow、未配置真实 AI Credential、未调用 AI、未修改 Caddy/DNS/旧部署目录。
 - 后续：为 n8n 绑定 staging Credential 并导入工作流（保持禁用），再设计 metadata 到 Directus 的受限写回任务。
 
+## 记录 019：Directus staging Schema 落地
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户明确授权
+- 范围：新 staging Directus 数据库
+- 操作：通过 Directus HTTP API 幂等创建已审阅的 5 个业务集合：`asset_metadata`、`asset_tag_definitions`、`asset_tag_ai_proposals`、`asset_tag_reviews`、`asset_tag_review_versions`，并创建对应字段。
+- 约束：`asset_metadata` 固有字段标记为只读；AI 提案和审核版本以独立集合保存。
+- 验证：API 返回所有集合创建完成；未写入任何素材记录、标签记录或真实业务数据。
+- 安全边界：只作用于新 staging 数据库；旧 `/opt/services/directus-test` 和旧 Volume 未触碰。
+- 后续：从 staging 导出正式 Directus snapshot，经过 PR 审核后纳入版本控制。
+
+## 记录 020：n8n staging 工作流导入
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户明确授权
+- 范围：新 staging n8n 数据库
+- 操作：首次导入因导出 JSON 缺少 n8n workflow `id` 失败；在仓库补充稳定 `id`、`versionId` 等导入元数据，创建并合并 n8n PR #3，发布 `v0.1.3-rc.1`，随后重新导入成功。
+- 结果：工作流 `asset-auto-tagging-v1-staging` 已存在。
+- 安全边界：工作流保持 `active: false`；未绑定真实 Credential、未调用 AI、未执行自动打标。
+- 验证：n8n CLI 报告 `Successfully imported 1 workflow`，工作流列表可见。
+- 后续：在 n8n UI 中绑定 staging Credential，先手动测试且保持禁用，再考虑启用。
+
 ## 记录模板
 
 ```text
