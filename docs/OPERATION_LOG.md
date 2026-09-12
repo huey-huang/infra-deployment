@@ -147,6 +147,22 @@
 - 验证：`bash scripts/validate-schema.sh` 和 `git diff --check` 通过；功能分支已推送 GitHub。
 - 后续：创建 PR 合并到 `develop`；PR 审核通过后再在 staging 生成真正的 Directus snapshot。
 
+## 记录 009：n8n 打标工作流骨架
+
+- 时间：2026-09-12
+- 操作者：Codex / 用户确认
+- 范围：`n8n-ai-tagging` 仓库
+- 分支 / 提交：`feature/workflow-foundation` / `c778edd`
+- 目标：建立可审查的 Directus → 标签库 → AI Gateway → AI 提案工作流结构。
+- 操作：
+  - 增加禁用状态的 `asset-auto-tagging.v1.json`。
+  - 包含素材读取、活动标签定义读取、媒体类型筛选、Sol 调用、结果规范化和不可变提案写回节点。
+  - 工作流声明 Directus Schema 和 Tag Result 契约版本。
+  - 将工作流 JSON 校验接入本地校验脚本。
+- 安全边界：工作流保持 `active: false`；没有导入现有 n8n、没有配置真实 Credential、没有调用 AI Gateway 或 Directus。
+- 验证：`bash scripts/validate.sh` 通过，工作流 JSON 和契约检查通过；功能分支已推送 GitHub。
+- 后续：评审并补充 Terra/Luna 回退分支、Schema 校验节点和批量触发，再考虑导入 staging n8n。
+
 ## 记录模板
 
 ```text
