@@ -382,3 +382,14 @@
 - 安全边界：本次未修改 Cloudflare DNS、Caddy、服务器或 Directus 配置。
 - 结论：当前域名已经绑定并可访问新 staging Directus，无需重复创建该 DNS 记录。
 - 后续：如需域名访问 n8n 或 metadata，应分别规划子域名和反代配置；当前 n8n/metadata 仍只监听本机端口。
+
+## 记录 027：n8n Directus Header Auth 兼容修复部署
+
+- 时间：2026-09-14 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：`n8n-ai-tagging` staging 工作流
+- 版本：`v0.1.5-rc.1`，PR #5 已合并
+- 操作：将三个 Directus HTTP 节点从不存在的 `directusApi` 预定义类型改为 `genericCredentialType` + `httpHeaderAuth`；同步更新 staging 工作流并使用 `--updateExisting` 导入。
+- 验证：工作流 `asset-auto-tagging-v1-staging` 导入成功，仍为 `active: false`；三个 Directus 节点均为 Header Auth；n8n `/healthz` 返回成功。
+- 安全边界：未写入或导出任何 Token/API Key；未启用工作流；未修改生产环境。
+- 后续：用户在三个 Directus 节点中选择已有 `directus-staging` 凭证；AI Gateway 凭证绑定后，再执行单图、单视频和错误 asset ID 测试。
