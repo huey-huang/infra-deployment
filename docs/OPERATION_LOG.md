@@ -393,3 +393,27 @@
 - 验证：工作流 `asset-auto-tagging-v1-staging` 导入成功，仍为 `active: false`；三个 Directus 节点均为 Header Auth；n8n `/healthz` 返回成功。
 - 安全边界：未写入或导出任何 Token/API Key；未启用工作流；未修改生产环境。
 - 后续：用户在三个 Directus 节点中选择已有 `directus-staging` 凭证；AI Gateway 凭证绑定后，再执行单图、单视频和错误 asset ID 测试。
+
+## 记录 028：绑定 Directus 凭证并初始化标签库
+
+- 时间：2026-10-20 11:30 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：AWS staging n8n、staging Directus、`infra-deployment` 版本矩阵
+- 分支 / 提交：
+  - 版本矩阵：`feature/staging-version-matrix-n8n-015`，PR #17 已合并
+  - 操作日志：`feature/operation-log-028`
+- 目标：把已经创建好的 Directus 凭证接入工作流，并恢复标签定义数据。
+- 操作：
+  - 将 `manifests/versions.yaml` 中的 n8n 版本从 `v0.1.2-rc.1` 修正为实际部署的 `v0.1.5-rc.1`。
+  - 通过 n8n CLI 导出工作流，仅为 `load-asset`、`load-tags`、`write-proposal` 三个节点写入 `directus-staging` 的凭证引用（内部 ID + 名称），再以 `--updateExisting` 导入。
+  - 从既有标签需求脚本生成 12 个业务维度、80 个选项，排除素材类型、视频时长、视频比例三个技术维度；写入 `asset_tag_definitions`。
+  - `atmosphere` 维度当前没有标准选项，因此标记为 `active=false`，待业务补充选项后再启用。
+- 验证：
+  - 工作流仍为 `active: false`。
+  - 三个 Directus 节点已绑定 `httpHeaderAuth`；Sol/Terra/Luna 三个 AI 节点仍未绑定。
+  - 标签定义共 12 条：common 10（启用 9）、image 1、video 1。
+- 安全边界：未读取或输出任何 Token/API Key；未启用工作流；未修改生产环境。
+- 已知问题：`.env` 中的初始管理员密码已被人工重置，Directus API 登录返回 401；因此标签初始化改为直接使用幂等 SQL 写入 staging 数据库，未改动管理员密码。
+- 后续：
+  - 用户创建 `ai-gateway-staging` Header Auth 凭证后，绑定三个 AI 节点。
+  - 上传 1 张图片和 1 个视频作为测试素材，再执行首次手动打标测试。
