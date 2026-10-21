@@ -13,10 +13,11 @@
 | DNS A 记录 | `directus.velotric.co -> 3.214.234.223` |
 | Cloudflare 代理 | DNS only |
 | 公网 22 | 可达 |
-| 公网 80/443 | **当前不可达，安全组未放行** |
-| HTTPS | 尚未完成证书签发 |
+| 公网 80/443 | 可达 |
+| HTTPS | Let's Encrypt 证书已签发，有效期至 2027-01-19 |
 
-当前唯一阻塞项是 AWS 安全组。DNS 和 Caddy 配置已经就绪。
+2026-10-21 已完成域名绑定：安全组放行 80/443，Caddy 使用 Let's Encrypt
+签发 `directus.velotric.co` 证书，公网健康检查返回 `pong`。
 
 ## 2. 放行 AWS 安全组
 
