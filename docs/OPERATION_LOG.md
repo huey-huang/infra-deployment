@@ -448,3 +448,21 @@
   - AI Gateway Base URL 和 API Key 尚未提供。
 - 数据说明：原实例的数据与备份未做异地保存，新环境素材数为 0，未恢复旧数据。
 - 后续：放行安全组 80/443 后验证证书；在 n8n 创建 `ai-gateway-staging` 并绑定三个模型节点；上传测试素材后执行端到端测试。
+
+## 记录 030：Directus 公网域名与 HTTPS 绑定完成
+
+- 时间：2026-10-21 10:26 Asia/Shanghai
+- 操作者：用户放行安全组 / Codex 验证与配置
+- 范围：AWS staging、Cloudflare DNS、Caddy、Directus
+- 操作：
+  - 用户将安全组入站规则放行 `80` 和 `443`。
+  - 确认公网 80/443 可达。
+  - Caddy 原 ACME 重试已进入 3 小时退避，且 ZeroSSL legacy 账号失效；将 ACME 固定到 Let's Encrypt，并配置联系邮箱 `admin@velotric.co`。
+  - 重启 Caddy，立即重试 TLS-ALPN-01 验证并成功签发证书。
+- 验证：
+  - `https://directus.velotric.co/server/ping` 返回 HTTP 200 和 `pong`。
+  - `http://directus.velotric.co/server/ping` 返回 308 跳转到 HTTPS。
+  - `https://directus.velotric.co/admin/login` 返回 HTTP 200。
+  - 证书 CN 为 `directus.velotric.co`，签发者为 Let's Encrypt，有效期至 2027-01-19。
+- 安全边界：Directus 仍仅监听 `127.0.0.1:8055`；公网只开放 22/80/443；未修改生产环境。
+- 后续：更新 SSH 22 来源为固定管理 IP；完成 AI Gateway 凭证和端到端打标测试。
