@@ -417,3 +417,34 @@
 - 后续：
   - 用户创建 `ai-gateway-staging` Header Auth 凭证后，绑定三个 AI 节点。
   - 上传 1 张图片和 1 个视频作为测试素材，再执行首次手动打标测试。
+
+## 记录 029：新 EC2 实例完整重建 staging
+
+- 时间：2026-10-21 14:30–15:10 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：AWS `us-east-1` 新 EC2 实例 `3.214.234.223`
+- 目标：原实例删除后，按既有 staging 手册在新实例重新部署完整环境。
+- 操作：
+  - 确认新实例复用了原公网 IP，SSH 主机指纹变化；备份并从 `known_hosts` 移除旧指纹后重新信任新 ED25519 指纹 `SHA256:UQ8ODG/w0epx+oeevrrd4MNzxtCjt8Jo+37RhLx/0b4`。
+  - 安装 Docker Engine `29.9.2`、Buildx `0.38.1`、Compose `v5.6.0`，启用 Docker 日志轮转。
+  - 部署 Directus `12.3.1` 与 PostgreSQL `16.10-alpine` 到 `/opt/services/directus-staging-v011`。
+  - 部署 n8n `2.38.4` 与独立 PostgreSQL `16.10-alpine` 到 `/opt/services/n8n-staging-v012`。
+  - 构建并部署 metadata-service 到 `/opt/services/metadata-staging-v012`。
+  - 安装 Caddy `2.6.2` 并配置 `directus.velotric.co -> 127.0.0.1:8055`。
+  - 应用 `directus-schema-v0.1`：创建 `asset_metadata`、`asset_tag_definitions`、`asset_tag_ai_proposals`、`asset_tag_reviews`、`asset_tag_review_versions` 及 6 个关系。
+  - 导入 12 个标签维度、80 个选项；`atmosphere` 因无标准选项保持未启用。
+  - 创建 Directus 服务账号 `n8n-staging@velotric.co`、最小权限策略和静态 Token；Token 仅保存在服务器 `.secrets/n8n-directus-token`（权限 600）。
+  - 通过 n8n CLI 导入 `directus-staging` 凭证并绑定 `load-asset`、`load-tags`、`write-proposal`；临时明文文件导入后立即删除。
+  - 导入 `asset-auto-tagging-v1-staging` 工作流，保持 `active: false`。
+- 验证：
+  - 五个容器全部 healthy。
+  - Directus `/server/ping` 返回 `pong`；n8n `/healthz` 与 metadata `/healthz` 返回 `{"status":"ok"}`。
+  - 服务 Token 访问 `asset_tag_definitions` 和 `files` 均为 HTTP 200。
+  - 工作流仍为禁用；三个 Directus 节点已绑定，三个 AI 节点未绑定。
+  - 标签统计：common 10（启用 9）、image 1、video 1。
+- 安全边界：未输出任何密码、Token 或 API Key；未启用工作流；未修改生产环境。
+- 阻塞项：
+  - 新实例安全组仅放行 `22`，`80/443` 从公网不可达，Let's Encrypt HTTP-01/TLS-ALPN 验证超时，HTTPS 尚未生效。
+  - AI Gateway Base URL 和 API Key 尚未提供。
+- 数据说明：原实例的数据与备份未做异地保存，新环境素材数为 0，未恢复旧数据。
+- 后续：放行安全组 80/443 后验证证书；在 n8n 创建 `ai-gateway-staging` 并绑定三个模型节点；上传测试素材后执行端到端测试。
