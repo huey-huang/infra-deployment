@@ -8,6 +8,9 @@
 
 ## 1. Cloudflare 后台操作
 
+> 当前用于自动化的 Cloudflare Token 可以创建 R2 Bucket，但没有
+> `Account API Tokens Read/Write` 权限，因此 R2 API Token 必须由你在控制台创建。
+
 ### 1.1 创建 Bucket
 
 已完成：
@@ -73,6 +76,17 @@ assets-staging.velotric.co
 如果域名在 Cloudflare，按控制台提示自动创建 CNAME。该自定义域名只用于公开或受控读取，不用于 Directus 的 S3 API 上传。
 
 ## 2. 在服务器配置 Directus R2
+
+也可以使用仓库中的脚本 `directus-platform/scripts/configure-r2.sh`，它会隐藏输入
+Access Key ID 和 Secret，并自动更新 `.env`、重建 Directus 和检查健康状态。
+
+该脚本已部署到服务器：
+
+```text
+/opt/services/directus-staging-v011/scripts/configure-r2.sh
+```
+
+手动配置步骤如下。
 
 登录服务器：
 
