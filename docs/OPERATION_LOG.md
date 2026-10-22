@@ -466,3 +466,24 @@
   - 证书 CN 为 `directus.velotric.co`，签发者为 Let's Encrypt，有效期至 2027-01-19。
 - 安全边界：Directus 仍仅监听 `127.0.0.1:8055`；公网只开放 22/80/443；未修改生产环境。
 - 后续：更新 SSH 22 来源为固定管理 IP；完成 AI Gateway 凭证和端到端打标测试。
+
+## 记录 031：Directus 驱动打标闭环与 R2 Bucket 创建
+
+- 时间：2026-10-22 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：Directus staging、n8n staging、Cloudflare R2
+- 目标：从 Directus 发起任务完成图片打标，并开始 R2 存储接入。
+- 操作：
+  - 创建 `staging-shared` Docker 网络，将 Directus 与 n8n 接入同一网络。
+  - 创建 `tagging_jobs` 集合和 Directus 事件 Flow，新增 queued 任务时调用 n8n Webhook。
+  - 创建 `directus-flow-staging` Header Auth 凭证并启用 n8n Webhook。
+  - 将工作流改为通过 `getBinaryDataBuffer` 读取 n8n `filesystem-v2` Binary，再生成 Base64 data URL。
+  - 将 AI 调用切换到已验证的 `/v1/responses` 接口，强化标签提示词并要求每个标签定义均返回，空标签触发回退。
+  - 在 Cloudflare 创建 R2 Bucket `velotric-assets-staging`。
+- 验证：
+  - Directus 创建 `tagging_jobs` 后自动进入 `processing`，最终进入 `review`。
+  - 任务 `5c1fe07b-3e25-4560-9b38-081c8e809059` 成功，模型 `gpt-5.6-sol`。
+  - Proposal `66e24472-5ee2-403c-8a17-a4f2f0a2223d` 写入 10 个标签，包含 `riding_scenario=beach`、`product_color=classic_scarlet`、`scene=outdoor`、`image_type=lifestyle`、`accessories=rear_rack` 等。
+  - 标签结果通过 `tag-result-v1` 校验。
+- 安全边界：未启用生产环境；未迁移现有本地素材；R2 Token 尚未创建。
+- 后续：创建 Bucket 级 R2 Token，写入 Directus staging `.env`，验证新上传文件 `storage=r2`，再规划历史素材迁移。
