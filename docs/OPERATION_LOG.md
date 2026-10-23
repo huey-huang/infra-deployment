@@ -487,3 +487,21 @@
   - 标签结果通过 `tag-result-v1` 校验。
 - 安全边界：未启用生产环境；未迁移现有本地素材；R2 Token 尚未创建。
 - 后续：创建 Bucket 级 R2 Token，写入 Directus staging `.env`，验证新上传文件 `storage=r2`，再规划历史素材迁移。
+
+## 记录 032：Cloudflare R2 staging 存储验证完成
+
+- 时间：2026-10-23 Asia/Shanghai
+- 操作者：用户创建 R2 Token / Codex 验证与修复
+- 范围：Directus staging、Cloudflare R2
+- 操作：
+  - 用户在 Cloudflare 创建 `velotric-assets-staging` Bucket 的 Bucket 级 R2 Token。
+  - 用户在服务器运行 `scripts/configure-r2.sh`，写入 R2 配置并重建 Directus。
+  - 发现 Directus `compose.yaml` 未透传 `STORAGE_*`，补充 R2 环境变量映射后重建容器。
+- 验证：
+  - Directus 容器已加载 `STORAGE_LOCATIONS=r2,local`、`STORAGE_R2_BUCKET=velotric-assets-staging`、`STORAGE_R2_DRIVER=s3`。
+  - 上传测试文件 `335f618c-a51f-4bdd-a240-e7a8f030b384`，返回 `storage=r2`。
+  - 从 Directus 读取该 R2 素材返回 HTTP 200。
+  - 删除该素材返回 HTTP 204。
+  - 测试文件已清理，Bucket 恢复为空。
+- 安全边界：R2 凭据仅存在于服务器 `.env`，未写入 Git 或日志；未迁移现有本地素材。
+- 后续：规划历史本地素材到 R2 的迁移、对象校验和 `directus_files.storage` 更新。

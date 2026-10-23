@@ -4,12 +4,12 @@
 > Cloudflare Account ID：`83342bb7fa2fa080f266ed67870bd18d`
 > Bucket：`velotric-assets-staging`
 > S3 Endpoint：`https://83342bb7fa2fa080f266ed67870bd18d.r2.cloudflarestorage.com`
-> 状态：Bucket 已创建，等待 R2 API Token 后启用 Directus R2
+> 状态：R2 已启用并完成上传/读取/删除验证
 
 ## 1. Cloudflare 后台操作
 
 > 当前用于自动化的 Cloudflare Token 可以创建 R2 Bucket，但没有
-> `Account API Tokens Read/Write` 权限，因此 R2 API Token 必须由你在控制台创建。
+> `Account API Tokens Read/Write` 权限；Bucket 级 R2 Token 已由管理员在控制台创建。
 
 ### 1.1 创建 Bucket
 
@@ -187,8 +187,10 @@ directus_files.storage = r2
 
 ```text
 R2 Bucket：已创建
-R2 Token：待创建
-Directus R2 环境变量：待写入
-R2 上传验证：待执行
+R2 Token：已创建并写入服务器 .env
+Directus R2 环境变量：已启用
+R2 上传验证：通过，directus_files.storage = r2
+R2 读取验证：通过，/assets/{id} = HTTP 200
+R2 删除验证：通过，DELETE /files/{id} = HTTP 204
 本地素材迁移：待执行
 ```
