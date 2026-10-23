@@ -487,3 +487,41 @@
   - 标签结果通过 `tag-result-v1` 校验。
 - 安全边界：未启用生产环境；未迁移现有本地素材；R2 Token 尚未创建。
 - 后续：创建 Bucket 级 R2 Token，写入 Directus staging `.env`，验证新上传文件 `storage=r2`，再规划历史素材迁移。
+
+## 记录 032：Cloudflare R2 staging 存储验证完成
+
+- 时间：2026-10-23 Asia/Shanghai
+- 操作者：用户创建 R2 Token / Codex 验证与修复
+- 范围：Directus staging、Cloudflare R2
+- 操作：
+  - 用户在 Cloudflare 创建 `velotric-assets-staging` Bucket 的 Bucket 级 R2 Token。
+  - 用户在服务器运行 `scripts/configure-r2.sh`，写入 R2 配置并重建 Directus。
+  - 发现 Directus `compose.yaml` 未透传 `STORAGE_*`，补充 R2 环境变量映射后重建容器。
+- 验证：
+  - Directus 容器已加载 `STORAGE_LOCATIONS=r2,local`、`STORAGE_R2_BUCKET=velotric-assets-staging`、`STORAGE_R2_DRIVER=s3`。
+  - 上传测试文件 `335f618c-a51f-4bdd-a240-e7a8f030b384`，返回 `storage=r2`。
+  - 从 Directus 读取该 R2 素材返回 HTTP 200。
+  - 删除该素材返回 HTTP 204。
+  - 测试文件已清理，Bucket 恢复为空。
+- 安全边界：R2 凭据仅存在于服务器 `.env`，未写入 Git 或日志；未迁移现有本地素材。
+- 后续：规划历史本地素材到 R2 的迁移、对象校验和 `directus_files.storage` 更新。
+
+## 记录 033：本地素材迁移、容量监控与审核记录
+
+- 时间：2026-10-23 Asia/Shanghai
+- 操作者：Codex / 用户明确授权
+- 范围：Directus staging、Cloudflare R2、Directus 审核
+- 操作：
+  - 将唯一本地素材 `b54a2a26-f37b-4fab-bcd9-ec4effbce396`（785475 bytes）上传到 R2，校验大小后在数据库事务中更新 `storage=r2`；本地副本保留。
+  - 绑定 `assets-staging.velotric.co` 到 R2 Bucket，当前 `enabled=false`，等待公开访问明确授权。
+  - 安装 `r2-capacity-check.timer`，每天 09:00 Asia/Shanghai 检查 R2 总大小不超过 9 GiB。
+  - 基于有效 Proposal 创建 Directus 待审核记录和 `ai_proposal` 版本快照。
+- 验证：
+  - 迁移素材读取返回 HTTP 200。
+  - R2 当前用量约 768K。
+  - 审核记录 `1fbbfa92-2b38-4032-8639-f749a48723c8`，版本 `26eb423c-414d-4743-baa7-9ed48ae799eb`，包含 10 个标签，状态为 pending。
+- 安全边界：本地素材未删除；公开自定义域名未启用；审核未自动批准。
+- 后续：
+  - 由业务人员审核 pending 记录并决定批准或修正。
+  - 明确授权后启用 R2 自定义域名公开访问。
+  - 在 Cloudflare Billing 手动添加月度预算告警。

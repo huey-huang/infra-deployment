@@ -4,9 +4,12 @@
 > Cloudflare Account ID：`83342bb7fa2fa080f266ed67870bd18d`
 > Bucket：`velotric-assets-staging`
 > S3 Endpoint：`https://83342bb7fa2fa080f266ed67870bd18d.r2.cloudflarestorage.com`
-> 状态：Bucket 已创建，等待 R2 API Token 后启用 Directus R2
+> 状态：R2 已启用并完成上传/读取/删除验证
 
 ## 1. Cloudflare 后台操作
+
+> 当前用于自动化的 Cloudflare Token 可以创建 R2 Bucket，但没有
+> `Account API Tokens Read/Write` 权限；Bucket 级 R2 Token 已由管理员在控制台创建。
 
 ### 1.1 创建 Bucket
 
@@ -73,6 +76,17 @@ assets-staging.velotric.co
 如果域名在 Cloudflare，按控制台提示自动创建 CNAME。该自定义域名只用于公开或受控读取，不用于 Directus 的 S3 API 上传。
 
 ## 2. 在服务器配置 Directus R2
+
+也可以使用仓库中的脚本 `directus-platform/scripts/configure-r2.sh`，它会隐藏输入
+Access Key ID 和 Secret，并自动更新 `.env`、重建 Directus 和检查健康状态。
+
+该脚本已部署到服务器：
+
+```text
+/opt/services/directus-staging-v011/scripts/configure-r2.sh
+```
+
+手动配置步骤如下。
 
 登录服务器：
 
@@ -173,8 +187,77 @@ directus_files.storage = r2
 
 ```text
 R2 Bucket：已创建
-R2 Token：待创建
-Directus R2 环境变量：待写入
-R2 上传验证：待执行
-本地素材迁移：待执行
+R2 Token：已创建并写入服务器 .env
+Directus R2 环境变量：已启用
+R2 上传验证：通过，directus_files.storage = r2
+R2 读取验证：通过，/assets/{id} = HTTP 200
+R2 删除验证：通过，DELETE /files/{id} = HTTP 204
+本地素材迁移：已完成 1 个文件，本地副本保留
+自定义域名：assets-staging.velotric.co 已绑定，公开访问暂未启用
+容量检查：systemd 定时器每日 09:00 CST 检查 9 GiB 阈值
 ```
+
+### 自定义域名状态
+
+`assets-staging.velotric.co` 已通过 Cloudflare API 绑定到 Bucket，当前设置：
+
+```text
+enabled: false
+DNS: 已由 Cloudflare 创建
+```
+
+启用公开访问后，对象 URL 形如：
+
+```text
+https://assets-staging.velotric.co/<filename_disk>
+```
+
+启用前请确认 Bucket 仅用于允许公开读取的素材。
+
+## 7. 容量与费用告警
+
+### 7.1 Cloudflare 费用预算
+
+在 Cloudflare Dashboard 进入 R2 Overview，在右侧 Usage/Billing Dashboard 中点击：
+
+```text
+Add Budget Alert
+```
+
+建议 staging 先设置：
+
+```text
+Monthly budget: 5 USD
+Notification email: 你的运维邮箱
+```
+
+这只是费用提醒，不是 R2 存储硬配额。
+
+### 7.2 Directus/R2 容量检查
+
+服务器已安装每日检查：
+
+```text
+/usr/local/bin/check-r2-capacity.sh
+systemd timer: r2-capacity-check.timer
+```
+
+运行时间：
+
+```text
+每天 09:00 Asia/Shanghai（01:00 UTC）
+```
+
+查看最近日志：
+
+```bash
+sudo journalctl -t r2-capacity --no-pager -n 30
+```
+
+当前检查结果示例：
+
+```text
+R2 usage 768K; limit 9 GiB
+```
+
+超过 9 GiB 时脚本会返回失败并写入 `WARNING` 日志。后续可将 journald 日志接入 CloudWatch 或其他告警渠道。
