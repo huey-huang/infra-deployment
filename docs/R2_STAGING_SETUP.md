@@ -193,7 +193,7 @@ R2 上传验证：通过，directus_files.storage = r2
 R2 读取验证：通过，/assets/{id} = HTTP 200
 R2 删除验证：通过，DELETE /files/{id} = HTTP 204
 本地素材迁移：已完成 1 个文件，本地副本保留
-自定义域名：assets-staging.velotric.co 已绑定，公开访问暂未启用
+自定义域名：assets-staging.velotric.co 已启用公开访问
 容量检查：systemd 定时器每日 09:00 CST 检查 9 GiB 阈值
 ```
 
@@ -202,8 +202,9 @@ R2 删除验证：通过，DELETE /files/{id} = HTTP 204
 `assets-staging.velotric.co` 已通过 Cloudflare API 绑定到 Bucket，当前设置：
 
 ```text
-enabled: false
+enabled: true
 DNS: 已由 Cloudflare 创建
+公开素材读取：HTTP 200
 ```
 
 启用公开访问后，对象 URL 形如：
@@ -218,6 +219,17 @@ https://assets-staging.velotric.co/<filename_disk>
 
 ### 7.1 Cloudflare 费用预算
 
+Cloudflare R2 Standard 当前免费额度为：
+
+```text
+Storage: 10 GB-month / month
+Class A Operations: 1 million / month
+Class B Operations: 10 million / month
+Egress: Free
+```
+
+免费额度不是硬性消费上限。超过免费额度会按量计费。
+
 在 Cloudflare Dashboard 进入 R2 Overview，在右侧 Usage/Billing Dashboard 中点击：
 
 ```text
@@ -227,11 +239,11 @@ Add Budget Alert
 建议 staging 先设置：
 
 ```text
-Monthly budget: 5 USD
+Monthly budget alert: 1 USD
 Notification email: 你的运维邮箱
 ```
 
-这只是费用提醒，不是 R2 存储硬配额。
+同时保持 R2 总存储低于 9 GiB，给 10 GB 免费额度预留约 1 GB 缓冲。
 
 ### 7.2 Directus/R2 容量检查
 

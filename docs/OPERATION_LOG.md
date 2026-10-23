@@ -525,3 +525,13 @@
   - 由业务人员审核 pending 记录并决定批准或修正。
   - 明确授权后启用 R2 自定义域名公开访问。
   - 在 Cloudflare Billing 手动添加月度预算告警。
+
+## 记录 034：R2 公开域名启用
+
+- 时间：2026-10-23 Asia/Shanghai
+- 操作者：Codex / 用户明确确认公开访问
+- 范围：Cloudflare R2 自定义域名
+- 操作：将 `assets-staging.velotric.co` 的 `enabled` 设置为 `true`。
+- 验证：公开对象 `https://assets-staging.velotric.co/b54a2a26-f37b-4fab-bcd9-ec4effbce396.webp` 返回 HTTP 200。
+- 当前免费额度基线：10 GB-month Standard 存储、1M Class A、10M Class B；目录保留 9 GiB 软上限和每日容量检查。
+- 后续：在 Cloudflare Billing 手动添加 `1 USD` 月度预算提醒；审核业务标签记录。
